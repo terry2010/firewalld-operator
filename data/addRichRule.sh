@@ -1,0 +1,1 @@
+firewall-cmd --add-rich-rule="rule family=ipv4 port port=3389 protocol=tcp source address=192.168.1.196 accept"
