@@ -28,7 +28,7 @@ func initRouter() *gin.Engine {
 
 	router.NoRoute(Common.Page404)
 
-	router.GET("/firewall/add", op.CrontrollerFirewallRichRuleAdd)
+	router.GET("/firewall/update/:id", op.CrontrollerFirewallRichRuleUpdate)
 
 	log.Println(os.Getpid(), "Server-Started")
 	log.Println(os.Getpid(), "Server-IP:PORT:", Common.GetServerIP()+":"+Common.Config.GetString("http.port"))
@@ -57,6 +57,8 @@ and settings.
 	runMode := pflag.StringP("mode", "m", "debug", "server run mode")
 
 	port := pflag.IntP("port", "p", -1, "server listening port[local]")
+
+	hole := pflag.IntP("hole", "o", -1, "server punch hole port[local]")
 
 	pflag.Parse()
 
@@ -99,7 +101,12 @@ and settings.
 		panic("need port")
 	}
 
+	if 1 > *hole {
+		panic("need hole")
+	}
+
 	Common.Config.Set("http.ip", Common.GetServerIP())
 	Common.Config.Set("http.port", port)
+	Common.Config.Set("firewall.hole", hole)
 
 }

@@ -2,10 +2,14 @@ package op
 
 import (
 	"../common"
+	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func init() {
@@ -13,33 +17,35 @@ func init() {
 }
 
 func FirewallAddRichRules(theRule FirewallRichRuleMap) error {
-	_cmd := `--add-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
-	log.Println(_cmd)
-	cmd := exec.Command("bash", "./data/addRichRule.sh")
+	_cmd := `firewall-cmd --permanent --add-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
+	fileName, err := writeCMD(_cmd)
 
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Start()
-	log.Println(Common.FastJsonMarshal(cmd.Args))
-	log.Println(err)
+	if nil == err {
+		cmd := exec.Command("bash", fileName)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+	}
+	deleteCMD(fileName)
+	return err
+}
+func FirewallRemoveRichRules(theRule FirewallRichRuleMap) error {
+	_cmd := `firewall-cmd --permanent --remove-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
+	fileName, err := writeCMD(_cmd)
+
+	if nil == err {
+		cmd := exec.Command("bash", fileName)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+	}
+	deleteCMD(fileName)
 	return err
 }
 
-func FirewallAddRichRules2(theRule FirewallRichRuleMap) error {
-	_cmd := `--add-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
-	log.Println(_cmd)
-	cmd := exec.Command("firewall-cmd", _cmd)
-
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Start()
-	log.Println(Common.FastJsonMarshal(cmd.Args))
-	log.Println(err)
-	return err
-}
-func FirewallRemoveRichRules(theDelRule FirewallRichRuleMap) error {
+func FirewallRemoveRichRules2(theDelRule FirewallRichRuleMap) error {
 	//content := `rule family="ipv4" source address="192.168.1.196" port port="80" protocol="tcp" accept`
 	//firewall-cmd --add-rich-rule='rule family="ipv4" port port="80" protocol="tcp" source address="192.168.1.196" accept '
 	var rules, err = FirewallListRichRules()
@@ -181,4 +187,16 @@ func FirewallCreatRichRule(ruleList FirewallRichRuleMap) (content string) {
 		}
 	}
 	return richRule
+}
+
+func writeCMD(_cmd string) (fileName string, err error) {
+	fileName = "./data/cmd_" + time.Now().Format("200612_150405_") + strconv.FormatInt(rand.Int63n(10000), 10) + ".sh"
+	_cmd = _cmd + "\n\nfirewall-cmd --reload"
+	_cmd = _cmd + "\n\nfirewall-cmd --list-all"
+	log.Println(_cmd)
+	err = ioutil.WriteFile(fileName, []byte(_cmd), 0777)
+	return
+}
+func deleteCMD(fileName string) error {
+	return os.Remove(fileName)
 }
