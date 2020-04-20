@@ -13,13 +13,15 @@ func init() {
 }
 
 func FirewallAddRichRules(theRule FirewallRichRuleMap) error {
-	_cmd := `   --add-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
+	_cmd := `--add-rich-rule="` + FirewallCreatRichRule(theRule) + `"`
 	log.Println(_cmd)
 	cmd := exec.Command("firewall-cmd", _cmd)
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Start()
+	log.Println(Common.FastJsonMarshal(cmd.Args))
 	log.Println(err)
 	return err
 }
