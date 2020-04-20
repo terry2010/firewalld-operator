@@ -11,6 +11,6 @@
     "db": 0
   },
   "firewall" : {
-    "port"
+    "port": "8888"
   }
 }
