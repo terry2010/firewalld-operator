@@ -3,6 +3,7 @@ package op
 import (
 	"../common"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -14,8 +15,12 @@ func init() {
 func FirewallAddRichRules(theRule FirewallRichRuleMap) error {
 	_cmd := `--add-rich-rule='` + FirewallCreatRichRule(theRule) + `'`
 	log.Println(_cmd)
-	output, err := exec.Command("firewall-cmd", _cmd).Output()
-	log.Println(err, output)
+	cmd := exec.Command("firewall-cmd", _cmd)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Start()
+	log.Println(err)
 	return err
 }
 func FirewallRemoveRichRules(theDelRule FirewallRichRuleMap) error {
