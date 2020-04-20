@@ -15,7 +15,7 @@ func init() {
 func FirewallAddRichRules(theRule FirewallRichRuleMap) error {
 	_cmd := `--add-rich-rule='` + FirewallCreatRichRule(theRule) + `'`
 	log.Println(_cmd)
-	cmd := exec.Command("firewall-cmd", _cmd)
+	cmd := exec.Command("firewall-cmd", "-v", "-d", _cmd)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -130,7 +130,8 @@ func FirewallCreatRichRule(ruleList FirewallRichRuleMap) (content string) {
 			tmpRule = tmpRule + v.Operate + " "
 			if len(v.Value) > 0 {
 				for _, v1 := range v.Value {
-					tmpRule = tmpRule + v1.Property + "=\"" + v1.Value + "\" "
+					//tmpRule = tmpRule + v1.Property + "=\"" + v1.Value + "\" "
+					tmpRule = tmpRule + v1.Property + "=" + v1.Value + " "
 				}
 			}
 			richRuleParts = append(richRuleParts, tmpRule)
