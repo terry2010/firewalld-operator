@@ -12,9 +12,9 @@ func init() {
 }
 
 func FirewallAddRichRules(theRule FirewallRichRuleMap) error {
-	_cmd := `/usr/bin/firewall-cmd --add-rich-rule='` + FirewallCreatRichRule(theRule) + `'`
+	_cmd := `--add-rich-rule='` + FirewallCreatRichRule(theRule) + `'`
 	log.Println(_cmd)
-	output, err := exec.Command(_cmd).Output()
+	output, err := exec.Command("firewall-cmd", _cmd).Output()
 	log.Println(err, output)
 	return err
 }
