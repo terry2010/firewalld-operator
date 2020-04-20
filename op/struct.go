@@ -1,5 +1,7 @@
 package op
 
+var err error
+
 type FirewallRichRule struct {
 	Operate string
 	Value   []FirewallRichRuleValue
